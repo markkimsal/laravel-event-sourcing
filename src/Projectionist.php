@@ -16,17 +16,17 @@ use Spatie\EventSourcing\Projectors\QueuedProjector;
 
 class Projectionist
 {
-    private EventHandlerCollection $projectors;
+    private $projectors;
 
-    private EventHandlerCollection $reactors;
+    private $reactors;
 
-    private bool $catchExceptions;
+    private $catchExceptions;
 
-    private bool $replayChunkSize;
+    private $replayChunkSize;
 
-    private bool $isProjecting = false;
+    private $isProjecting = false;
 
-    private bool $isReplaying = false;
+    private $isReplaying = false;
 
     public function __construct(array $config)
     {

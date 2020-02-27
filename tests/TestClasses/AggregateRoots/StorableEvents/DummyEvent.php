@@ -6,7 +6,7 @@ use Spatie\EventSourcing\ShouldBeStored;
 
 class DummyEvent implements ShouldBeStored
 {
-    public int $integer;
+    public $integer;
 
     public function __construct(int $integer)
     {

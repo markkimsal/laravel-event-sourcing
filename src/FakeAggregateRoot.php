@@ -7,7 +7,7 @@ use PHPUnit\Framework\Assert;
 
 class FakeAggregateRoot
 {
-    private AggregateRoot $aggregateRoot;
+    private $aggregateRoot;
 
     public function __construct(AggregateRoot $aggregateRoot)
     {

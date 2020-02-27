@@ -16,7 +16,7 @@ class ReplayCommand extends Command
 
     protected $description = 'Replay stored events';
 
-    protected ?Projectionist $projectionist;
+    protected $projectionist;
 
     public function handle(Projectionist $projectionist): void
     {

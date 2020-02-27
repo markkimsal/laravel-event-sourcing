@@ -22,7 +22,7 @@ use Spatie\EventSourcing\Tests\TestClasses\Reactors\BrokeReactor;
 
 class ReplayCommandTest extends TestCase
 {
-    protected Account $account;
+    protected $account;
 
     public function setUp(): void
     {

@@ -11,7 +11,7 @@ use Spatie\EventSourcing\Models\EloquentStoredEvent;
 
 class EloquentStoredEventRepository implements StoredEventRepository
 {
-    protected string $storedEventModel;
+    protected $storedEventModel;
 
     public function __construct()
     {

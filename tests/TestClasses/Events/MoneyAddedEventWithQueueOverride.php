@@ -10,9 +10,9 @@ class MoneyAddedEventWithQueueOverride implements ShouldBeStored
 {
     use SerializesModels;
 
-    public object $account;
+    public $account;
 
-    public int $amount;
+    public $amount;
 
     /** @var string */
     public $queue = 'testQueue';

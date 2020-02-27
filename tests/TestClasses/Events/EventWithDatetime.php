@@ -6,7 +6,7 @@ use Spatie\EventSourcing\ShouldBeStored;
 
 class EventWithDatetime implements ShouldBeStored
 {
-    public \DateTimeImmutable $value;
+    public $value;
 
     public function __construct(\DateTimeImmutable $value)
     {
