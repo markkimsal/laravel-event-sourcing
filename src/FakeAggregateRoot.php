@@ -62,7 +62,9 @@ class FakeAggregateRoot
 
     public function assertNotRecorded($unexpectedEventClasses): void
     {
-        $actualEventClasses = array_map(fn (ShouldBeStored $event) => get_class($event), $this->aggregateRoot->getRecordedEvents());
+        $actualEventClasses = array_map(function (ShouldBeStored $event) {
+            return get_class($event);
+        }, $this->aggregateRoot->getRecordedEvents());
 
         $unexpectedEventClasses = Arr::wrap($unexpectedEventClasses);
 
