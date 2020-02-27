@@ -3,9 +3,21 @@
 Fixes from spatie fork:
 * Removed short fn () syntax (php 7.3)
 * Removed member variable types (php 7.3)
+* AggregateRoot uuid is protected instead of private
 
 Planned Fixes
 * Locking reads from the database (pkey "gaps" fix)
+
+## Protected UUID
+When you subclass AggregateRoot, you always must do a `retrieve($uuid)` call to set the UUID.  It's not possible to set the UUID and skip any event loading.
+
+```
+//spatie way
+$order = OrderAggregate::retrieve($uuid);
+
+//my way
+$order = new OrderAggregate($uuid);
+```
 
 ## Original README follows
 
