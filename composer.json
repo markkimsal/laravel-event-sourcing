@@ -1,5 +1,5 @@
 {
-    "name": "spatie/laravel-event-sourcing",
+    "name": "markkimsal/laravel-event-sourcing",
     "description": "The easiest way to get started with event sourcing in Laravel",
     "keywords": [
         "spatie",
@@ -10,7 +10,7 @@
         "projectors",
         "reactors"
     ],
-    "homepage": "https://github.com/spatie/laravel-event-sourcing",
+    "homepage": "https://github.com/markkimsal/laravel-event-sourcing",
     "license": "MIT",
     "authors": [
         {
@@ -22,7 +22,7 @@
     ],
     "require": {
         "ext-json": "*",
-        "php": "^7.4",
+        "php": "^7.2",
         "illuminate/console": "^6.0",
         "illuminate/database": "^6.0",
         "illuminate/events": "^6.0",
