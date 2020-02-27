@@ -16,17 +16,17 @@ use Spatie\EventSourcing\Projectors\QueuedProjector;
 
 class Projectionist
 {
-    private EventHandlerCollection $projectors;
+    private $projectors;
 
-    private EventHandlerCollection $reactors;
+    private $reactors;
 
-    private bool $catchExceptions;
+    private $catchExceptions;
 
-    private bool $replayChunkSize;
+    private $replayChunkSize;
 
-    private bool $isProjecting = false;
+    private $isProjecting = false;
 
-    private bool $isReplaying = false;
+    private $isReplaying = false;
 
     public function __construct(array $config)
     {
@@ -91,14 +91,18 @@ class Projectionist
 
     public function getProjector(string $name): ?Projector
     {
-        return $this->projectors->all()->first(fn (Projector $projector) => $projector->getName() === $name);
+        return $this->projectors->all()->first(function (Projector $projector) use ($name) {
+            return $projector->getName() === $name;
+        });
     }
 
     public function getAsyncProjectorsFor(StoredEvent $storedEvent): Collection
     {
         return $this->projectors
             ->forEvent($storedEvent)
-            ->reject(fn (Projector $projector) => $projector->shouldBeCalledImmediately())
+            ->reject(function (Projector $projector) {
+                return $projector->shouldBeCalledImmediately();
+            })
             ->values();
     }
 
@@ -174,7 +178,9 @@ class Projectionist
     {
         $projectors = $this->projectors
             ->forEvent($storedEvent)
-            ->reject(fn (Projector $projector) => $projector->shouldBeCalledImmediately());
+            ->reject(function (Projector $projector) {
+                return $projector->shouldBeCalledImmediately();
+            });
 
         $this->applyStoredEventToProjectors(
             $storedEvent,
@@ -191,7 +197,9 @@ class Projectionist
     {
         $projectors = $this->projectors
             ->forEvent($storedEvent)
-            ->filter(fn (Projector $projector) => $projector->shouldBeCalledImmediately());
+            ->filter(function (Projector $projector) {
+                return $projector->shouldBeCalledImmediately();
+            });
 
         $this->applyStoredEventToProjectors($storedEvent, $projectors);
     }

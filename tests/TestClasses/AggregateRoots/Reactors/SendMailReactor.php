@@ -12,7 +12,7 @@ class SendMailReactor implements EventHandler
 {
     use HandlesEvents;
 
-    protected string $handleEvent = MoneyAdded::class;
+    protected $handleEvent = MoneyAdded::class;
 
     public function __invoke(MoneyAdded $event, string $aggregateUuid)
     {

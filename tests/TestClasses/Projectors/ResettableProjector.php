@@ -11,7 +11,7 @@ class ResettableProjector implements Projector
 {
     use ProjectsEvents;
 
-    protected array $handlesEvents = [
+    protected $handlesEvents = [
         MoneyAddedEvent::class => 'onMoneyAdded',
     ];
 

@@ -21,7 +21,7 @@ use Spatie\EventSourcing\Tests\TestClasses\Reactors\BrokeReactor;
 
 class EventSubscriberTest extends TestCase
 {
-    protected Account $account;
+    protected $account;
 
     public function setUp(): void
     {

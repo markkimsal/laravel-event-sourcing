@@ -13,7 +13,7 @@ use Spatie\EventSourcing\Tests\TestClasses\Projectors\BalanceProjector;
 
 class StoredEventTest extends TestCase
 {
-    protected Account $account;
+    protected $account;
 
     public function setUp(): void
     {

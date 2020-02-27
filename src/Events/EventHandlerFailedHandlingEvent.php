@@ -8,11 +8,11 @@ use Spatie\EventSourcing\StoredEvent;
 
 class EventHandlerFailedHandlingEvent
 {
-    public EventHandler $eventHandler;
+    public $eventHandler;
 
-    public StoredEvent $storedEvent;
+    public $storedEvent;
 
-    public Exception $exception;
+    public $exception;
 
     public function __construct(EventHandler $eventHandler, StoredEvent $storedEvent, Exception $exception)
     {

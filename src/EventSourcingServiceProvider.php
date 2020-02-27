@@ -61,7 +61,9 @@ class EventSourcingServiceProvider extends ServiceProvider
 
         $this->app->singleton(StoredEventRepository::class, config('event-sourcing.stored_event_repository'));
 
-        $this->app->singleton(EventSubscriber::class, fn () => new EventSubscriber(config('event-sourcing.stored_event_repository')));
+        $this->app->singleton(EventSubscriber::class, function () {
+            return new EventSubscriber(config('event-sourcing.stored_event_repository'));
+        });
 
         $this->app
             ->when(ReplayCommand::class)
