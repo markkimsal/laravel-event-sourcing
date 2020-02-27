@@ -12,7 +12,7 @@ use Spatie\EventSourcing\Snapshots\SnapshotRepository;
 
 abstract class AggregateRoot
 {
-    private $uuid = '';
+    protected $uuid = '';
 
     private $recordedEvents = [];
 
