@@ -7,7 +7,8 @@ Fixes from spatie fork:
 * static make() like retrieve but w/o db lookup
 
 Planned Fixes
-* Locking reads from the database (pkey "gaps" fix)
+* Fix concurrent reading - (locking reads (fixes pkey "gaps"))
+* Fix concurrent writing - (make aggregateVersion per event rather than per persist)
 
 ## Static Make
 When you subclass AggregateRoot, you always must do a `retrieve($uuid)` call to set the UUID.  It's not possible to set the UUID and skip any event loading.
