@@ -22,6 +22,15 @@ abstract class AggregateRoot
 
     protected static $allowConcurrency = false;
 
+    public static function make(string $uuid): self
+    {
+        $aggregateRoot = (new static());
+
+        $aggregateRoot->uuid = $uuid;
+
+        return $aggregateRoot;
+    }
+
     public static function retrieve(string $uuid): self
     {
         $aggregateRoot = (new static());
