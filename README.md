@@ -5,6 +5,7 @@ Fixes from spatie fork:
 * Removed member variable types (php 7.3)
 * AggregateRoot uuid is protected instead of private
 * static make() like retrieve but w/o db lookup
+* don't allow concurrent updates to event stream for same aggregate root UUID
 
 Planned Fixes
 * Fix concurrent reading - (locking reads (fixes pkey "gaps"))
