@@ -317,7 +317,7 @@ class AggregateRootTest extends TestCase
         $aggregateRootInAnotherRequest->addMoney(100);
         $aggregateRootInAnotherRequest->persist();
 
-        /** This line will now not throw an exception */
+        /* * This line will now not throw an exception */
         $aggregateRoot->persist();
 
         $this->assertTestPassed();

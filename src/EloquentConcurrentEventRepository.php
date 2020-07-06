@@ -9,7 +9,7 @@ use Spatie\EventSourcing\EventSerializers\EventSerializer;
 use Spatie\EventSourcing\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\Models\EloquentStoredEvent;
 
-class EloquentStoredEventRepository implements StoredEventRepository
+class EloquentConcurrentEventRepository implements StoredEventRepository
 {
     protected $storedEventModel;
 
@@ -25,7 +25,7 @@ class EloquentStoredEventRepository implements StoredEventRepository
     public function retrieveAll(string $uuid = null): LazyCollection
     {
         /** @var \Illuminate\Database\Query\Builder $query */
-        $query = $this->storedEventModel::query();
+        $query = $this->storedEventModel::query()->lockInShareMode();
 
         if ($uuid) {
             $query->uuid($uuid);
@@ -54,6 +54,7 @@ class EloquentStoredEventRepository implements StoredEventRepository
     {
         /** @var \Illuminate\Database\Query\Builder $query */
         $query = $this->storedEventModel::query()
+			->lockInShareMode()
             ->uuid($uuid)
             ->afterVersion($version);
 
@@ -64,6 +65,9 @@ class EloquentStoredEventRepository implements StoredEventRepository
 
     public function persist(ShouldBeStored $event, string $uuid = null, int $aggregateVersion = null): StoredEvent
     {
+		if ($uuid !== null && $aggregateVersion === null) {
+			throw new Exceptions\ConcurrencyException('aggregate version cannot be zero');
+		}
         /** @var EloquentStoredEvent $eloquentStoredEvent */
         $eloquentStoredEvent = new $this->storedEventModel();
 
@@ -76,23 +80,26 @@ class EloquentStoredEventRepository implements StoredEventRepository
             'created_at' => Carbon::now(),
         ]);
 
-        try {
-            $eloquentStoredEvent->save();
-        } catch (\Exception $e) {
-            $eloquentStoredEvent->aggregate_version++;
-            $eloquentStoredEvent->save();
-        }
+		$eloquentStoredEvent->save();
 
         return $eloquentStoredEvent->toStoredEvent();
     }
 
+	/**
+	 * @throw \Exception 
+	 */
     public function persistMany(array $events, string $uuid = null, int $aggregateVersion = null): LazyCollection
     {
+		if ($uuid !== null && $aggregateVersion === null) {
+			throw new Exceptions\ConcurrencyException('aggregate version cannot be null');
+		}
         $storedEvents = [];
 
-        foreach ($events as $event) {
-            $storedEvents[] = self::persist($event, $uuid, $aggregateVersion);
-        }
+		foreach ($events as $idx => $event) {
+			\DB::transaction(function() use ($event, $uuid, $aggregateVersion, $idx, &$storedEvents){
+				$storedEvents[] = self::persist($event, $uuid, ($aggregateVersion + $idx + 1));
+			});
+		}
 
         return new LazyCollection($storedEvents);
     }
@@ -128,7 +135,7 @@ class EloquentStoredEventRepository implements StoredEventRepository
     private function prepareEventModelQuery(int $startingFrom, string $uuid = null): Builder
     {
         /** @var Builder $query */
-        $query = $this->storedEventModel::query()->startingFrom($startingFrom);
+        $query = $this->storedEventModel::query()->startingFrom($startingFrom)->lockInShareMode();
 
         if ($uuid) {
             $query->uuid($uuid);

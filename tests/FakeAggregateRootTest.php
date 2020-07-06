@@ -10,7 +10,8 @@ class FakeAggregateRootTest extends TestCase
     /** @test */
     public function it_can_determine_that_no_events_were_recorded()
     {
-        DummyAggregateRoot::fake()->assertNothingRecorded();
+        $x = DummyAggregateRoot::fake();
+        $x->assertNothingRecorded();
     }
 
     /** @test */

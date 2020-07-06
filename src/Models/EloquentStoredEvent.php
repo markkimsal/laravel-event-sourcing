@@ -62,4 +62,9 @@ class EloquentStoredEvent extends Model
     {
         $query->where('aggregate_uuid', $uuid);
     }
+
+    public function scopeLockInShareMode(Builder $query): void
+    {
+        $query->sharedLock();
+    }
 }

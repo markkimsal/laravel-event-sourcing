@@ -2,10 +2,10 @@
 
 namespace Spatie\EventSourcing\Tests\TestClasses\Repositories;
 
-use Spatie\EventSourcing\EloquentStoredEventRepository;
+use Spatie\EventSourcing\EloquentConcurrentEventRepository;
 use Spatie\EventSourcing\Tests\TestClasses\Models\OtherEloquentStoredEvent;
 
-class OtherEloquentStoredEventRepository extends EloquentStoredEventRepository
+class OtherEloquentStoredEventRepository extends EloquentConcurrentEventRepository
 {
     protected $storedEventModel;
 

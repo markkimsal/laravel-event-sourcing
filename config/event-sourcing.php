@@ -53,7 +53,9 @@ return [
      * can change this to a class of your own. The only restriction is that
      * it should implement \Spatie\EventSourcing\StoredEventRepository.
      */
-    'stored_event_repository' => \Spatie\EventSourcing\EloquentStoredEventRepository::class,
+    'stored_event_repository' => \Spatie\EventSourcing\EloquentConcurrentEventRepository::class,
+
+    'loose_stored_event_repository' => \Spatie\EventSourcing\EloquentStoredEventRepository::class,
 
     /*
      * This class is responsible for storing events. To add extra behaviour you
