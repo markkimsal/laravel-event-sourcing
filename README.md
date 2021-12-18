@@ -10,6 +10,26 @@ Planned Fixes
 * Fix concurrent reading - (locking reads (fixes pkey "gaps"))
 * Fix concurrent writing - (make aggregateVersion per event rather than per persist)
 
+
+# Locking and Transactions
+
+Mysql's `SELECT ... LOCK IN SHARE MODE` behaves 2 different ways depending on if it is done inside a transaction or outside (with autocommit=1).
+
+Using a locking read will try to obtain a a gap lock or next-key lock because we are scanning a non-unique index of 'aggregate\_uuid' (but I believe this also happens even with a compound unique key of 'aggregate\_uuid' and 'aggregate\_version').  Trying to obtain the lock with autocommit=1 and outside of a `BEGIN` or `START TRANSACTION` statement will have the effect of waiting for other inserts which obtained a next-key lock to complete and flush the output.  This means that selecting ranges of pkeys will not result in "gaps".
+
+Using a locking read inside a transaction will try to obtain the same locks on any rows scanned plus obtain a lock on the next item to be inserted into any index scanned.  So, using a locking read inside a transaction will block all inserts into `stored_events` table because the lock is on the next highest value of 'aggregate\_uuid', effectively blocking all inserts.
+
+We are not using a locking read inside a transaction when finding the highest aggregate\_version right before inserting new events, but this idea was attempted so some function comments might be referring to this old method.
+
+All this assumes the ISOLATION LEVEL READ COMMITTED (which is the mysql default).
+
+For all `retrieve()` calls whose purpose is to reconstitute an Aggregate, we use locking reads to ensure we see a consistent view of any in-flight write transactions.
+
+For any pre-insert reads which try to ensure the fencing parameter 'aggregate\_version' is up-to-date with the in-memory aggregate, we do not use locking reads and rely on the unique index of 'aggregate\_uuid' + 'aggregate\_version' to prevent stale writes.o
+
+Any call to `persist()` could throw a `CouldNotPersistAggregate` exception.
+
+
 ## Static Make
 When you subclass AggregateRoot, you always must do a `retrieve($uuid)` call to set the UUID.  It's not possible to set the UUID and skip any event loading.
 
