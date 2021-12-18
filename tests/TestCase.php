@@ -17,6 +17,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
+        $this->artisan('migrate', ['--database' => 'mysql', '--path' => './database/migrations', '--realpath' => true])->run();
         $this->setUpDatabase();
 
         FakeUuid::reset();
@@ -44,14 +45,16 @@ abstract class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        Schema::dropIfExists('stored_events');
-        include_once __DIR__.'/../stubs/create_stored_events_table.php.stub';
-        (new \CreateStoredEventsTable())->up();
+        // Schema::dropIfExists('stored_events');
+        // include_once __DIR__.'/../stubs/create_stored_events_table.php.stub';
+        // (new \CreateStoredEventsTable())->up();
 
-        Schema::dropIfExists('snapshots');
-        include_once __DIR__.'/../stubs/create_snapshots_table.php.stub';
-        (new \CreateSnapshotsTable())->up();
+        // Schema::dropIfExists('snapshots');
+        // include_once __DIR__.'/../stubs/create_snapshots_table.php.stub';
+        // (new \CreateSnapshotsTable())->up();
 
+        DB::statement('TRUNCATE TABLE stored_events');
+        DB::statement('TRUNCATE TABLE snapshots');
         Schema::dropIfExists('other_stored_events');
         if ($this->dbDriver() === 'mysql') {
             DB::statement('CREATE TABLE other_stored_events LIKE stored_events');
