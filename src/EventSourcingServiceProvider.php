@@ -61,6 +61,9 @@ class EventSourcingServiceProvider extends ServiceProvider
 
         $this->app->singleton(StoredEventRepository::class, config('event-sourcing.stored_event_repository'));
 
+        $this->app->singleton('event-sourcing.stored_event_repository', StoredEventRepository::class);
+        $this->app->singleton('event-sourcing.consistent_stored_event_repository', EloquentConcurrentEventRepository::class);
+
         $this->app->singleton(EventSubscriber::class, function () {
             return new EventSubscriber(config('event-sourcing.stored_event_repository'));
         });

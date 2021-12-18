@@ -8,7 +8,7 @@ use Spatie\EventSourcing\AggregateRoot;
 class CouldNotPersistAggregate extends Exception
 {
     public static function unexpectedVersionAlreadyPersisted(
-        AggregateRoot $aggregateRoot,
+		$aggregateRoot,
         string $uuid,
         int $expectedVersion,
         int $actualVersion,
