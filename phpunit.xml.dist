@@ -22,9 +22,15 @@
     <php>
         <env name="DB_CONNECTION" value="mysql"/>
         <env name="DB_USERNAME" value="root"/>
-        <env name="DB_PASSWORD" value=""/>
+        <env name="DB_PASSWORD" value="root"/>
         <env name="DB_DATABASE" value="laravel_event_sourcing"/>
         <env name="DB_HOST" value="127.0.0.1" />
         <env name="DB_PORT" value="3306" />
+        <env name="DB2_CONNECTION" value="mysql2"/>
+        <env name="DB2_USERNAME" value="root"/>
+        <env name="DB2_PASSWORD" value="root"/>
+        <env name="DB2_DATABASE" value="laravel_event_sourcing"/>
+        <env name="DB2_HOST" value="127.0.0.1" />
+        <env name="DB2_PORT" value="3306" />
     </php>
 </phpunit>

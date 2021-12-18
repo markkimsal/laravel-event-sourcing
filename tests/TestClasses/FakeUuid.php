@@ -4,7 +4,7 @@ namespace Spatie\EventSourcing\Tests\TestClasses;
 
 class FakeUuid
 {
-    private static $count = 1;
+    static $count = 1;
 
     public static function generate()
     {

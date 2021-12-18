@@ -15,6 +15,9 @@ class EloquentStoredEvent extends Model
     public $timestamps = false;
 
     protected $table = 'stored_events';
+    // public $incrementing = false;
+    // protected $keyType = 'string';
+    // protected $primaryKey = null;
 
     public $casts = [
         'event_properties' => 'array',
@@ -61,5 +64,10 @@ class EloquentStoredEvent extends Model
     public function scopeUuid(Builder $query, string $uuid): void
     {
         $query->where('aggregate_uuid', $uuid);
+    }
+
+    public function scopeLockInShareMode(Builder $query): void
+    {
+        $query->sharedLock();
     }
 }

@@ -13,12 +13,13 @@ use Spatie\EventSourcing\Snapshots\SnapshotRepository;
 abstract class AggregateRoot
 {
     protected $uuid = '';
+    protected $storedEventRepository = null;
 
     private $recordedEvents = [];
 
-    protected $aggregateVersion = 0;
+    public $aggregateVersion = 0;
 
-    protected $aggregateVersionAfterReconstitution = 0;
+    public $aggregateVersionAfterReconstitution = 0;
 
     protected static $allowConcurrency = false;
 
@@ -51,20 +52,42 @@ abstract class AggregateRoot
 
     public function persist(): self
     {
-        $this->ensureNoOtherEventsHaveBeenPersisted();
+        try {
+            $storedEvents = call_user_func(
+                [$this->getStoredEventRepository(), 'persistMany'],
+                $this->getAndClearRecordedEvents(),
+                $this->uuid ?? null,
+                $this->aggregateVersionAfterReconstitution,
+            );
 
-        $storedEvents = call_user_func(
-            [$this->getStoredEventRepository(), 'persistMany'],
-            $this->getAndClearRecordedEvents(),
-            $this->uuid ?? '',
-            $this->aggregateVersion,
-        );
+            $storedEvents->each(function (StoredEvent $storedEvent) {
+                $storedEvent->handle();
+            });
 
-        $storedEvents->each(function (StoredEvent $storedEvent) {
-            $storedEvent->handle();
-        });
+            $this->aggregateVersionAfterReconstitution += $storedEvents->count();
+        } catch (\Exception $e) {
+            //an exception will occur if the same aggregate uuid and version already exist
+            throw CouldNotPersistAggregate::unexpectedVersionAlreadyPersisted(
+                $this,
+                $this->uuid,
+                $this->aggregateVersionAfterReconstitution,
+                $this->aggregateVersionAfterReconstitution,
+                $e
+            );
+        }
 
-        $this->aggregateVersionAfterReconstitution = $this->aggregateVersion;
+        //check for FakeAggregateRoot
+        if ($this->aggregateVersion > 0) {
+            if ($this->aggregateVersionAfterReconstitution != $this->aggregateVersion) {
+                throw CouldNotPersistAggregate::unexpectedVersionAlreadyPersisted(
+                    $this,
+                    $this->uuid,
+                    $this->aggregateVersion,
+                    $this->aggregateVersionAfterReconstitution,
+                );
+                throw new Exceptions\ConcurrencyException('aggregate version is not the same after saving');
+            }
+        }
 
         return $this;
     }
@@ -85,7 +108,11 @@ abstract class AggregateRoot
 
     protected function getStoredEventRepository(): StoredEventRepository
     {
-        return app($this->storedEventRepository ?? config('event-sourcing.stored_event_repository'));
+        $key = 'event-sourcing.consistent_stored_event_repository';
+        if (static::$allowConcurrency) {
+            $key = 'event-sourcing.stored_event_repository';
+        }
+        return app($this->storedEventRepository ?? $key);
     }
 
     public function getRecordedEvents(): array
@@ -142,24 +169,6 @@ abstract class AggregateRoot
         return $this;
     }
 
-    protected function ensureNoOtherEventsHaveBeenPersisted(): void
-    {
-        if (static::$allowConcurrency) {
-            return;
-        }
-
-        $latestPersistedVersionId = $this->getStoredEventRepository()->getLatestAggregateVersion($this->uuid);
-
-        if ($this->aggregateVersionAfterReconstitution !== $latestPersistedVersionId) {
-            throw CouldNotPersistAggregate::unexpectedVersionAlreadyPersisted(
-                $this,
-                $this->uuid,
-                $this->aggregateVersionAfterReconstitution,
-                $latestPersistedVersionId,
-                );
-        }
-    }
-
     private function apply(ShouldBeStored $event): void
     {
         $classBaseName = class_basename($event);
@@ -184,6 +193,8 @@ abstract class AggregateRoot
     {
         $events = Arr::wrap($events);
 
-        return (new FakeAggregateRoot(app(static::class)))->given($events);
+        //$uuid = \Spatie\EventSourcing\Tests\TestClasses\FakeUuid::generate();
+        $uuid = substr(sha1(rand()), 0, 12);
+        return (new FakeAggregateRoot(static::retrieve($uuid)))->given($events);
     }
 }
