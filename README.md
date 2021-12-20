@@ -1,15 +1,18 @@
-# Event sourcing for people on php 7.3
+# Event sourcing with no concurrency bugs
+
+I haven't found a PHP library yet that does event sourcing properly wrt concurrency, so I fixed one.
 
 Fixes from spatie fork:
+* don't allow concurrent updates to event stream for same aggregate root UUID
+* Fix concurrent reading - (locking reads (fixes pkey "gaps"))
+* Fix concurrent writing - (make aggregateVersion per event rather than per persist)
+
+
+Other changes:
 * Removed short fn () syntax (php 7.3)
 * Removed member variable types (php 7.3)
 * AggregateRoot uuid is protected instead of private
 * static make() like retrieve but w/o db lookup
-* don't allow concurrent updates to event stream for same aggregate root UUID
-
-Planned Fixes
-* Fix concurrent reading - (locking reads (fixes pkey "gaps"))
-* Fix concurrent writing - (make aggregateVersion per event rather than per persist)
 
 
 # Locking and Transactions
