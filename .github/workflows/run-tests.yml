@@ -6,14 +6,25 @@ jobs:
     test:
         runs-on: ubuntu-latest
         strategy:
+            max-parallel: 1
             matrix:
-                php: ['7.3']
-                laravel: ['6.*']
-                dependency-version: [prefer-lowest, prefer-stable]
+                php: ['7.3', '7.4']
+                laravel: ['6.*', '7.*']
+                dependency-version: [prefer-stable]
                 os: [ubuntu-latest]
                 include:
                     - laravel: 6.*
                       testbench: 4.*
+                    - laravel: 7.*
+                      testbench: 5.*
+                    - laravel: 8.*
+                      testbench: 6.*
+                      php: '7.4'
+                      dependency-version: 'prefer-stable'
+                      os: 'ubuntu-latest'
+                exclude:
+                    - laravel: 6.*
+                      php: '8.0'
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
 
@@ -38,6 +49,7 @@ jobs:
               run: |
                   sudo systemctl start mysql
                   mysql  -u root -proot -e 'CREATE DATABASE IF NOT EXISTS laravel_event_sourcing;'
+                  mysql  -u root -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"
 
             - name: Install dependencies
               run: |
