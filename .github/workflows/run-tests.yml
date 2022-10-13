@@ -22,6 +22,10 @@ jobs:
                       testbench: 4.*
                       php: '7.3'
                       dependency-version: 'prefer-stable'
+                    - laravel: 6.*
+                      testbench: 4.*
+                      php: '7.4'
+                      dependency-version: 'prefer-stable'
                     - laravel: 7.*
                       testbench: 5.*
                       php: '7.3'
@@ -30,9 +34,16 @@ jobs:
                       testbench: 5.*
                       php: '7.4'
                       dependency-version: 'prefer-stable'
+                    - laravel: 7.*
+                      testbench: 5.*
+                      php: '8.0'
+                      dependency-version: 'prefer-stable'
                     - laravel: 8.*
                       testbench: 6.*
                       php: '7.4'
+                    - laravel: 8.*
+                      testbench: 6.*
+                      php: '8.0'
 
         name: "Php: ${{ matrix.php }} - Laravel: ${{ matrix.laravel }} - ${{ matrix.dependency-version }}"
 
